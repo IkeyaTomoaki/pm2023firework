@@ -9,7 +9,7 @@
 </head>
 
 <body>
-
+  <p>訪問者数: <span id="visitor-count">0</span></p>
   <script>
     // 大きさの変数
     var fireworksSize = 3;   ///////////////////////////////////////////////////////
@@ -26,7 +26,29 @@
       stroke(255);
       strokeWeight(3);
       background(0);
-    }
+      // 訪問者数をカウントする変数
+      var visitorCount = 0;
+
+      // 訪問者数をカウントする関数
+      function incrementVisitorCount() {
+        visitorCount++;
+      }
+
+      // ページが読み込まれたら訪問者数をカウントする
+      window.addEventListener("load", function() {
+        incrementVisitorCount();
+        displayVisitorCount();
+      });
+      // 訪問者数を表示する関数
+      function displayVisitorCount() {
+        document.querySelector("#visitor-count").innerHTML = visitorCount;
+      }
+
+      // 1秒ごとに訪問者数を表示する
+      setInterval(displayVisitorCount, 1000);
+      }
+
+
 
     // ドロー関数
     function draw() {
@@ -365,6 +387,9 @@ function keyPressed() {
     function windowResized() {
       resizeCanvas(windowWidth, windowHeight);
     }
+
+
+    
   </script>
 
 </body>
