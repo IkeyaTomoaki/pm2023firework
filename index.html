@@ -1,57 +1,400 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
-<meta charset="UTF-8">
-<title>Googleスプレッドシートの内容をjsonデータとして利用する</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>花火アニメーション</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 </head>
+
 <body>
-<div id="whole">
-<!-- // -->
-</div>
-<script>
-// ページ読み込み後の処理
-window.onload = function(){
-	// 【main-script】 を実行
-	getJsonp_GAS();
+
+  <script>
+    // 大きさの変数
+    var fireworksSize = 3;
+
+    // グローバル変数の宣言
+    var fireworks = [];
+    var gravity;
+
+    // スプレッドシートから取得したデータを格納する変数
+    var spreadsheetData;
+
+
+
+
+ // ページ読み込み後の処理
+window.onload = function () {
+  // &#8203;``&#8203;``【oaicite:1】``&#8203;``&#8203; を実行
+  getJsonp_GAS();
 }
 
-// 【main-script】 スプレッドシート内の記述をjsonデータとして読み込み html 内へ入れ込む
-//変更後
-//変更後
+// &#8203;``&#8203;``【oaicite:0】``&#8203;``&#8203; スプレッドシート内の記述をjsonデータとして読み込み html 内へ入れ込む
 function getJsonp_GAS() {
-	// 1秒おきにデータをロード
-	setInterval(function(){
-		$.ajax({
-			type: 'GET',
-			url: 'https://script.google.com/macros/s/AKfycbwoxHZ-qhoZCqJXZqYOVYoI2g9ILZ_bJo4dmr8IdXSGEjazh5Hlt_mRYkKCV5otVQPpjQ/exec',
-			dataType: 'jsonp',
-			jsonpCallback: 'jsondata',
-			success: function(json){
-				//JSONデータが取得された場合
-				if(json){
-					var len = json.length;
-					// 最後に入力された値だけを取得
-					var score = json[len - 1].どれくらい楽しかったですか;
-					// html要素のinnerHTML属性に設定
-					document.getElementById('whole').innerHTML = score + '<br>';
-				}else{
-					//JSONデータを取得されなかった場合
-					// HTML要素のinnerHTML属性を空に設定
-					document.getElementById('whole').innerHTML = '';
-				}
-			}
-		});
-	}, 100);
+  // 最後のセルの数を保存する変数
+  var lastCellCount = 0;
+
+  // 1秒おきにデータをロード
+  setInterval(function () {
+    $.ajax({
+      type: 'GET',
+      url: 'https://script.google.com/macros/s/AKfycbwoxHZ-qhoZCqJXZqYOVYoI2g9ILZ_bJo4dmr8IdXSGEjazh5Hlt_mRYkKCV5otVQPpjQ/exec',
+      dataType: 'jsonp',
+      jsonpCallback: 'jsondata',
+      success: function (json) {
+        // JSONデータが取得された場合
+        if (json) {
+          var currentCellCount = json.length;
+        // スプレッドシートから取得したデータが存在し、セルの個数が変わった場合
+        if (lastCellCount !== currentCellCount) {
+          // スプレッドシートから取得した最後のデータの数だけ花火を生成
+          var lastData = json[json.length - 1]; // スプレッドシートから取得した最後のデータ
+          var fireworksCount = lastData.どれくらい楽しかったですか; // データの数を取得
+
+          for (var i = 0; i < fireworksCount * 2; i++) {
+            fireworks.push(new Firework(random(width), height));
+          }
+        }
+
+          // 更新したセルの数を保存
+          lastCellCount = currentCellCount;
+        } else {
+          // JSONデータを取得されなかった場合
+          // HTML要素のinnerHTML属性を空に設定
+          document.getElementById('whole').innerHTML = '';
+        }
+      }
+    });
+  }, 1000);
 }
 
-// JSONデータが取得できなかった場合、HTML要素のinnerHTML属性を空に設定
-if(json === undefined){
-	document.getElementById('whole').innerHTML = '';
+
+
+
+    // キープレス関数
+    function keyPressed() {
+  if (key === 'Enter') {
+    // スプレッドシートから取得したデータが存在する場合
+    if (spreadsheetData && spreadsheetData.length > 0) {
+      // スプレッドシートから取得した最後のデータだけ花火を生成
+      var lastData = spreadsheetData[spreadsheetData.length - 1];
+      fireworks.push(new Firework(mouseX, mouseY, lastData.どれくらい楽しかったですか));
+    } else {
+      // データがない場合はデフォルトの数だけ花火を生成
+      for (var i = 0; i < 5; i++) {
+        fireworks.push(new Firework(mouseX, mouseY));
+      }
+    }
+    // 新しいデータを待つために spreadsheetData を空にする
+    spreadsheetData = [];
+  }
 }
 
 
+    // 変更点: this.hu を this.r に変更
+    function Firework(x, y) {
+      // 花火の色
+      this.r = floor(random(256)); // 赤の値 (0から255)
+      this.g = floor(random(256)); // 緑の値 (0から255)
+      this.b = floor(random(256)); // 青の値 (0から255)
+      this.a = 255; // アルファ（透明度）
 
-</script>
+      this.firework = new Particle(x, y, this.r, true);
+      this.exploded = false;
+      this.particles = [];
+      this.explosionFrame = 30;
+
+      // 花火が終了したかどうかの確認
+      this.done = function () {
+        if (this.exploded && this.particles.length === 0) {
+          return true;
+        } else {
+          return false;
+        }
+      };
+
+      // 花火の表示
+      this.show = function () {
+        if (!this.exploded) {
+          this.firework.show();
+        }
+        for (var i = 0; i < this.particles.length; i++) {
+          if (random() > 0.65) {
+            this.particles[i].show();
+          }
+        }
+      };
+
+      // 花火の更新
+      this.update = function () {
+        if (!this.exploded) {
+          this.firework.applyForce(gravity);
+          this.firework.update();
+          if (this.firework.vel.y >= 0) {
+            this.exploded = true;
+            this.explode();
+          }
+        }
+        for (var i = this.particles.length - 1; i >= 0; i--) {
+          this.particles[i].applyForce(gravity);
+          this.particles[i].update();
+          if (this.particles[i].done()) {
+            this.particles.splice(i, 1);
+          }
+        }
+      };
+
+      // 花火の爆発
+      this.explode = function () {
+        for (var i = 0; i < 100; i++) {
+          var p = new Particle(this.firework.pos.x, this.firework.pos.y, this.r, false);
+          fireworks.push(p);
+          this.particles.push(p);
+        }
+      };
+    }
+
+
+    // Particleクラスの定義
+function Particle(x, y, hu, firework) {
+  this.pos = createVector(x, y);
+  this.firework = firework;
+  this.lifespan = 255;
+  this.hu = hu;
+  this.size = random(0.01* fireworksSize, 5* fireworksSize); // パーティクルのサイズ////////////////////////////
+
+  if (this.firework) {
+    this.vel = createVector(0, random(-8, -16));
+  } else {
+    this.vel = p5.Vector.random2D();
+    this.vel.mult(this.size);
+  }
+  this.acc = createVector(0, 0);
+  this.afterImages = [];
+
+  // パーティクルの表示
+  this.show = function () {
+    colorMode(HSB);
+    if (!this.firework) {
+      strokeWeight(this.size);
+      stroke(hu, this.lifespan / 3 + 30, this.lifespan);
+    } else {
+      strokeWeight(this.size);
+      stroke(hu, 255, 255);
+    }
+
+    // パーティクルの位置にランダムなノイズを追加
+    this.pos.x += random(-1, 1);
+    this.pos.y += random(-1, 1);
+
+    point(this.pos.x, this.pos.y);
+
+    // アフターイメージの表示
+    for (let ai of this.afterImages) {
+      if (ai.getAlpha() <= 0) {
+        this.afterImages = this.afterImages.filter((n) => n !== ai);
+        continue;
+      }
+      ai.rsImage();
+    }
+  };
+
+  // パーティクルの寿命
+  this.done = function () {
+    if (this.lifespan < 0 || this.pos.y > height) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
+  // パーティクルの更新
+  this.update = function () {
+    if (!this.firework) {
+      this.vel.mult(0.9);
+      this.pos.y -= random();
+      this.lifespan -= 2;   // パーティクルの寿命を減らす
+    }
+    this.vel.add(this.acc);
+    this.pos.add(this.vel);
+    this.acc.mult(0);
+
+    // アフターイメージの更新
+    for (let ai of this.afterImages) {
+      ai.update();
+    }
+
+    // 爆発までの猶予を減らす
+    if (this.firework) {
+      if (this.firework.explosionFrame > 0) {
+        this.firework.explosionFrame--;
+      }
+
+      // 猶予がなくなったら爆発
+      if (this.firework.explosionFrame === 0 && this.firework.vel.y >= 0 && !this.firework.exploded) {
+        this.firework.exploded = true;
+        this.firework.explode();
+      }
+    }
+  };
+
+  // 外力をパーティクルに加える
+  this.applyForce = function (force) {
+    this.acc.add(force);
+  };
+}
+
+
+    // アフターイメージの定義
+    function Afterimage(r, g, b, x, y, w, a) {
+      this.r = r;
+      this.g = g;
+      this.b = b;
+      this.x = x;
+      this.y = y;
+      this.w = w;
+      this.a = a;
+      this.vx = random(-0.24, 0.24);
+      this.vy = random(0.2, 0.8);
+      this.vw = random(0.05, 0.2);
+
+      // アフターイメージの透明度の取得
+      this.getAlpha = function () {
+        return this.a;
+      };
+
+      // アフターイメージの表示
+      this.rsImage = function () {
+        if (0 < this.a) {
+          this.update(this.r, this.g, this.b, this.x, this.y, this.w, this.a);
+          this.r += 4;
+          this.g += 4;
+          this.b += 4;
+          this.x = this.x + this.vx;
+          this.y = this.y + this.vy;
+          if (0 < this.w) {
+            this.w = this.w - this.vw;
+          }
+          this.a = this.a - 4;
+        }
+      };
+
+      // アフターイメージの更新
+      this.update = function () {
+        this.r += 2.5;
+        this.g += 2.5;
+        this.b += 2.5;
+        this.x = this.x + this.vx;
+        this.y = this.y + this.vy;
+        if (0 < this.w) {
+          this.w = this.w - this.vw;
+        }
+        this.a = this.a - 1.5;
+      };
+
+      // アフターイメージの更新
+      this.update = function (r, g, b, x, y, w, a) {
+        let c = color(r, g, b);
+        c.setAlpha(a);
+        fill(c);
+        ellipse(x, y, w, w);
+      };
+    }
+
+    // Fireworkクラスの定義
+    function Firework() {
+      this.hu = random(0, 255);
+      this.firework = new Particle(random(width), height, this.hu, true);
+      this.exploded = false;
+      this.particles = [];
+      this.explosionFrame = 30;
+
+      // 花火が終了したかどうかの確認
+      this.done = function () {
+        if (this.exploded && this.particles.length === 0) {
+          return true;
+        } else {
+          return false;
+        }
+      };
+
+      // 花火の表示
+      this.show = function () {
+        if (!this.exploded) {
+          this.firework.show();
+        }
+        for (var i = 0; i < this.particles.length; i++) {
+          if (random() > 0.65) {
+            this.particles[i].show();
+          }
+        }
+      };
+
+      // 花火の更新
+      this.update = function () {
+        if (!this.exploded) {
+          this.firework.applyForce(gravity);
+          this.firework.update();
+          if (this.firework.vel.y >= 0) {
+            this.exploded = true;
+            this.explode();
+          }
+        }
+        for (var i = this.particles.length - 1; i >= 0; i--) {
+          this.particles[i].applyForce(gravity);
+          this.particles[i].update();
+          if (this.particles[i].done()) {
+            this.particles.splice(i, 1);
+          }
+        }
+      };
+
+      // 花火の爆発
+      this.explode = function () {
+        for (var i = 0; i < 100; i++) {
+          var p = new Particle(this.firework.pos.x, this.firework.pos.y, this.hu, false);
+          this.particles.push(p);
+        }
+      };
+    }
+
+    // グローバル変数の宣言
+    var fireworks = [];
+    var gravity;
+
+   // セットアップ関数
+   function setup() {
+      createCanvas(windowWidth, windowHeight);
+      colorMode(HSB);
+      gravity = createVector(0, 0.2);
+      stroke(255);
+      strokeWeight(3);
+      background(0);
+    }
+
+    // ドロー関数
+    function draw() {
+      colorMode(RGB);
+      background(0, 0, 0, 25);
+      for (var i = fireworks.length - 1; i >= 0; i--) {
+        fireworks[i].update();
+        fireworks[i].show();
+
+        if (fireworks[i].done()) {
+          fireworks.splice(i, 1);
+        }
+      }
+    }
+
+    // ウィンドウリサイズ関数
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+  </script>
+
 </body>
+
 </html>
+
