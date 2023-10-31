@@ -51,7 +51,7 @@ function getJsonp_GAS() {
         if (lastCellCount !== currentCellCount) {
           // スプレッドシートから取得した最後のデータの数だけ花火を生成
           var lastData = json[json.length - 1]; // スプレッドシートから取得した最後のデータ
-          var fireworksCount = lastData.どれくらい楽しかったですか; // データの数を取得
+          var fireworksCount = lastData.楽しんでいただけましたか; // データの数を取得
 
           for (var i = 0; i < fireworksCount * 2; i++) {
             fireworks.push(new Firework(random(width), height));
