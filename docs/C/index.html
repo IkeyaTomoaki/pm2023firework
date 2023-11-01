@@ -429,9 +429,15 @@ var imgWidth = 150; // 画像の幅（適宜調整）
 var imgHeight = 150; // 画像の高さ（適宜調整）
 
 // 画像を中心に描画
-image(img, centerX - imgWidth / 2, centerY * 2.8 / 2 - imgHeight / 2, imgWidth, imgHeight);
-image(img, centerX*3/2 - imgWidth  / 2, centerY * 2.8 / 2 - imgHeight / 2, imgWidth, imgHeight);
+image(img, centerX - imgWidth / 2, centerY * 3.4 / 2 - imgHeight / 2, imgWidth, imgHeight);
+image(img, centerX*3/2 - imgWidth  / 2, centerY * 3.4 / 2 - imgHeight / 2, imgWidth, imgHeight);
 image(img, centerX*1/2 - imgWidth / 2, centerY * 2.8 / 2 - imgHeight / 2, imgWidth, imgHeight);
+// テキストの追加
+fill(255); // 白色
+noStroke(); // 縁をなくす
+textSize(40); // テキストの大きさを変更
+textAlign(CENTER, BOTTOM); // テキストの基準点を下部中央に設定
+text("QRコードを読み込んでアンケートに答えると花火が上がります。", centerX * 4 / 3 - imgWidth, centerY * 2.4 / 2 - imgHeight / 2 - 10);
 
 for (var i = fireworks.length - 1; i >= 0; i--) {
   fireworks[i].update();
