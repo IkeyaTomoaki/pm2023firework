@@ -431,6 +431,12 @@ function Particle(x, y, hu, firework) {
   // 画像を中心に描画
   image(img, centerX * 4 / 3 - imgWidth / 2, centerY * 3 / 2 - imgHeight / 2, imgWidth, imgHeight);
 
+// テキストの追加
+fill(255); // 白色
+noStroke(); // 縁をなくす
+textSize(20); // テキストの大きさを変更
+textAlign(CENTER, BOTTOM); // テキストの基準点を下部中央に設定
+text("QRコードを読み込んでアンケートに答えると花火が上がります。", centerX * 4 / 3 - imgWidth, centerY * 3 / 2 - imgHeight / 2 - 10);
 
     for (var i = fireworks.length - 1; i >= 0; i--) {
       fireworks[i].update();
@@ -444,6 +450,7 @@ function Particle(x, y, hu, firework) {
     // 画面の上部に赤い四角を描画
     push();
     fill(0, 0, 0);
+    noStroke(); // 縁をなくす
     rectMode(CORNER);
     var squareHeight = height * 0.2;
     rect(0, 0, width, squareHeight);
@@ -452,6 +459,7 @@ function Particle(x, y, hu, firework) {
     // 画面の右部にもう一つの四角を描画
     push();
     fill(0, 0, 0);
+    noStroke(); // 縁をなくす
     var squareWidth = width * 0.09;
     rect(width - squareWidth, 0, squareWidth, height);
     pop();
@@ -459,6 +467,7 @@ function Particle(x, y, hu, firework) {
     // 画面の右部にもう一つの四角を描画
     push();
     fill(0, 0, 0);
+    noStroke(); // 縁をなくす
     var squareWidth = width * 0.09;
     rect(0, 0, squareWidth, height);
     pop();

@@ -449,6 +449,7 @@ for (var i = fireworks.length - 1; i >= 0; i--) {
         push();
         strokecolor = color(0, 0, 0);
         fill(0, 0, 0);
+        noStroke(); // 縁をなくす
         rectMode(CORNER);
         var squareHeight = height * 0.1;
         rect(0, 0, width, squareHeight);
@@ -457,6 +458,7 @@ for (var i = fireworks.length - 1; i >= 0; i--) {
         // 画面の右部にもう一つの四角を描画
         push();
         fill(0, 0, 0);
+        noStroke(); // 縁をなくす
         strokecolor = color(0, 0, 0);
         var squareWidth = width * 0.07;
         rect(width - squareWidth, 0, squareWidth, height);
@@ -465,6 +467,7 @@ for (var i = fireworks.length - 1; i >= 0; i--) {
         // 画面の右部にもう一つの四角を描画
         push();
         fill(0, 0, 0);
+        noStroke(); // 縁をなくす
         strokecolor = color(0, 0, 0);
         var squareWidth = width * 0.07;
         rect(0, 0, squareWidth, height);
