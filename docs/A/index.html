@@ -19,7 +19,7 @@
 
   function preload() {
 
-    img = loadImage('../image/image.png');
+    img = loadImage('../image/image1.png');
 
     // 花火の音声ファイルを指定
     fireworkSound = loadSound('../sound/hanabi.mp3');
@@ -425,8 +425,8 @@ function Particle(x, y, hu, firework) {
     // 画像を中心に描画
   var centerX = width / 2;
   var centerY = height / 2;
-  var imgWidth = 200; // 画像の幅（適宜調整）
-  var imgHeight = 200; // 画像の高さ（適宜調整）
+  var imgWidth = 250; // 画像の幅（適宜調整）
+  var imgHeight = 250; // 画像の高さ（適宜調整）
 
   // 画像を中心に描画
   image(img, centerX * 3.4 / 3 - imgWidth / 2, centerY * 3 / 2 - imgHeight / 2, imgWidth, imgHeight);
