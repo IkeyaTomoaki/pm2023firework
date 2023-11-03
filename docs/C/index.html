@@ -19,7 +19,8 @@
 
   function preload() {
 
-    img = loadImage('../image/image1.png');
+    img1 = loadImage('../image/image1.png');
+    img = loadImage('../image/image.png');
 
     // 花火の音声ファイルを指定
     fireworkSound = loadSound('../sound/hanabi.mp3');
@@ -494,8 +495,8 @@ for (var i = fireworks.length - 1; i >= 0; i--) {
       // Draw the image after the fireworks
   var centerX = width / 2;
   var centerY = height / 2;
-  var imgWidth = 150; // Adjust as needed
-  var imgHeight = 150; // Adjust as needed
+  var imgWidth = 180; // Adjust as needed
+  var imgHeight = 180; // Adjust as needed
 
   image(img, centerX - imgWidth / 2, centerY * 2.8 / 2 - imgHeight / 2, imgWidth, imgHeight);
 
